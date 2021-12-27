@@ -30,11 +30,11 @@ int LoadDocument(const char* path)
     return EXIT_SUCCESS;
 }
 
-int GetPageCount(int& page_count)
+int GetPageCount(int* page_count)
 {
     fz_try(ctx)
     {
-        page_count = fz_count_pages(ctx, doc);
+        *page_count = fz_count_pages(ctx, doc);
     }
     fz_catch(ctx)
     {
@@ -44,7 +44,7 @@ int GetPageCount(int& page_count)
     return EXIT_SUCCESS;
 }
 
-int GetPageText(int page_number, unsigned char* result, int& len)
+int GetPageText(int page_number, unsigned char** result, int* len)
 {
     fz_stext_options options;
     options.flags = FZ_STEXT_PRESERVE_WHITESPACE;
@@ -68,11 +68,11 @@ int GetPageText(int page_number, unsigned char* result, int& len)
         fprintf(stderr, "cannot extract text from page %d. err: %s\n", page_number, fz_caught_message(ctx));
         return EXIT_FAILURE;
     }
-    len = fz_buffer_storage(ctx, buf, &result);
+    *len = fz_buffer_storage(ctx, buf, result);
     return EXIT_SUCCESS;
 }
 
-int GetPagePixmap(int page_number, unsigned char* result, int& size, int& channel)
+int GetPagePixmap(int page_number, unsigned char** result, int* size, int* channel)
 {
     if(p != nullptr)
     {
@@ -87,9 +87,9 @@ int GetPagePixmap(int page_number, unsigned char* result, int& size, int& channe
         fprintf(stderr, "cannot render page %d. err: %s\n", page_number, fz_caught_message(ctx));
         return EXIT_FAILURE;
     }
-    result = fz_pixmap_samples(ctx, p);
-    size = p->w * p->h * p->stride;
-    channel = p->n;
+    *result = fz_pixmap_samples(ctx, p);
+    *size = p->w * p->h * p->stride;
+    *channel = p->n;
 }
 
 void ClearMuPDF()
@@ -105,8 +105,8 @@ void ClearMuPDF()
         fz_drop_context(ctx);
     }
 }
-
-void hello_world(char** i)
+unsigned char t[] = "lueluelue";
+void hello_world(unsigned char** i)
 {
-    (*i) = "hi mupdf";
+    (*i) = t;
 }

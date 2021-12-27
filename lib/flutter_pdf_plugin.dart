@@ -21,6 +21,9 @@ class FlutterPdfPlugin {
     Pointer<Pointer<Utf8>> i = calloc<Pointer<Utf8>>();
     print("!");
     hello(i);
+    print(i);
+    // print(i)
+    // print(i.value.toDartString(length: 9));
     print(i.value.toDartString());
     calloc.free(i);
     print("!");
