@@ -1,0 +1,9 @@
+LIBRARY   libmypdf
+EXPORTS
+    LoadDocument
+    GetPageCount
+    GetPageText
+    GetPagePixmap
+    ClearMuPDF
+    NewMuPdfInst
+    hello_world

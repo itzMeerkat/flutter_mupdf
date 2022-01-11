@@ -1,0 +1,9 @@
+*.vcxproj
+cmake_install.cmake
+CMakeFiles
+Debug
+flutter_mupdf.dir
+x64
+*.filters
+CMakeCache.txt
+*.sln
