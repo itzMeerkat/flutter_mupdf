@@ -72,7 +72,7 @@ int GetPageText(int page_number, unsigned char** result, int* len)
     return EXIT_SUCCESS;
 }
 
-int GetPagePixmap(int page_number, unsigned char** result, int* size, int* channel)
+int GetPagePixmap(int page_number, unsigned char** result, int* w, int* h, int* stride, int* channel)
 {
     if(p != nullptr)
     {
@@ -88,7 +88,9 @@ int GetPagePixmap(int page_number, unsigned char** result, int* size, int* chann
         return EXIT_FAILURE;
     }
     *result = fz_pixmap_samples(ctx, p);
-    *size = p->w * p->h * p->stride;
+    *w = p->w;
+    *h = p->h;
+    *stride = p->stride;
     *channel = p->n;
 }
 
