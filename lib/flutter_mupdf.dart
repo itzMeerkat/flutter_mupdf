@@ -51,10 +51,10 @@ class FlutterPdfPlugin {
 
   PdfText getPageText(Pointer<MuPdfInst> ctx, int pageNumber) {
     print("get text");
-    Pointer<Pointer<Uint8>> j = calloc<Pointer<Uint8>>();
+    Pointer<Pointer<Utf8>> j = calloc<Pointer<Utf8>>();
     Pointer<Int32> l = calloc<Int32>();
     pdflib.GetPageText(ctx, pageNumber, j, l);
-    String ret = String.fromCharCodes(j.value.asTypedList(l.value));
+    String ret = j.value.toDartString(length: l.value);
     calloc.free(j);
     calloc.free(l);
     var d = jsonDecode(ret);

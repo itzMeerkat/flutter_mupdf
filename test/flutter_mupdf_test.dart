@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'dart:convert';
 
 import 'package:flutter_mupdf/clibmypdf.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -19,7 +20,8 @@ void main() {
 
   test("getPageText", () {
     var json = p.getPageText(ctx, 0);
-    print(json.blocks.length);
+    var res = jsonEncode(json);
+    print(res);
   });
 
   test("getPagePixmap", () async {
