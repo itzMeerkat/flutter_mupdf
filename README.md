@@ -11,29 +11,20 @@ and the Flutter guide for
 [developing packages and plugins](https://flutter.dev/developing-packages). 
 -->
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+read, render, create or modify pdf, all in one(but not all implemented yet).
 
 ## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+* Read PDF
+* Get page count of a pdf.
+* Rasterize PDF page to `ui.Image`
+* Extract texts and its format information from PDF.
 
 ## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+Since this package is a wrapper, it is not very dart. But no worries, MuPdf has neat API design and its already easy to use.
+Basically all you need to pay attention is, always call `clearMuPdf` for every unused `MuPdfInst`. Otherwise there will be memory leak.
 
 ## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
-
-```dart
-const like = 'sample';
-```
+Please refer to test for now.
 
 ## Additional information
-
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
+Since MuPdf is licensed under AGPLv3, this package will also licensed under the same license.
