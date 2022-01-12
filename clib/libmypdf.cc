@@ -1,111 +1,117 @@
-#include <mupdf/fitz.h>
 #include "libmypdf.h"
+#include <mupdf/fitz.h>
 
-fz_document* doc;
-fz_context* ctx;
-fz_buffer* buf;
-fz_pixmap* p;
+struct MuPdfInst {
+    fz_document* doc;
+    fz_context* ctx;
+    fz_buffer* buf;
+    fz_pixmap* p;
+};
 
-
-int LoadDocument(const char* path)
+MuPdfInst* NewMuPdfInst()
 {
-    ctx = fz_new_context(NULL, NULL, FZ_STORE_UNLIMITED);
-    if (!ctx)
+    return new MuPdfInst{};
+}
+
+int LoadDocument(MuPdfInst* inst, const char* path)
+{
+    inst->ctx = fz_new_context(NULL, NULL, FZ_STORE_UNLIMITED);
+    if (!inst->ctx)
     {
         fprintf(stderr, "cannot create mupdf context\n");
         return EXIT_FAILURE;
     }
 
-    fz_try(ctx)
+    fz_try(inst->ctx)
     {
-        fz_register_document_handlers(ctx);
-        doc = fz_open_document(ctx, path);
-        buf = fz_new_buffer(ctx, 512);
+        fz_register_document_handlers(inst->ctx);
+        inst->doc = fz_open_document(inst->ctx, path);
+        inst->buf = fz_new_buffer(inst->ctx, 512);
     }
-    fz_catch(ctx)
+    fz_catch(inst->ctx)
     {
-        fprintf(stderr, "cannot open document: %s\n", fz_caught_message(ctx));
+        fprintf(stderr, "cannot open document: %s\n", fz_caught_message(inst->ctx));
         return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;
 }
 
-int GetPageCount(int* page_count)
+int GetPageCount(MuPdfInst* inst, int* page_count)
 {
-    fz_try(ctx)
+    fz_try(inst->ctx)
     {
-        *page_count = fz_count_pages(ctx, doc);
+        *page_count = fz_count_pages(inst->ctx, inst->doc);
     }
-    fz_catch(ctx)
+    fz_catch(inst->ctx)
     {
-        fprintf(stderr, "cannot count number of pages: %s\n", fz_caught_message(ctx));
+        fprintf(stderr, "cannot count number of pages: %s\n", fz_caught_message(inst->ctx));
         return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;
 }
 
-int GetPageText(int page_number, unsigned char** result, int* len)
+int GetPageText(MuPdfInst* inst, int page_number, unsigned char** result, int* len)
 {
     fz_stext_options options;
     options.flags = FZ_STEXT_PRESERVE_WHITESPACE;
     fz_stext_page* text;
     fz_output* out;
 
-    fz_clear_buffer(ctx, buf);
-    fz_try(ctx)
+    fz_clear_buffer(inst->ctx, inst->buf);
+    fz_try(inst->ctx)
     {
-        text = fz_new_stext_page_from_page_number(ctx, doc, page_number, &options);
-        out = fz_new_output_with_buffer(ctx, buf);
-        fz_print_stext_page_as_json(ctx,out,text,1);
+        text = fz_new_stext_page_from_page_number(inst->ctx, inst->doc, page_number, &options);
+        out = fz_new_output_with_buffer(inst->ctx, inst->buf);
+        fz_print_stext_page_as_json(inst->ctx, out, text, 1);
     }
-    fz_always(ctx)
+    fz_always(inst->ctx)
     {
-        fz_close_output(ctx, out);
-        fz_drop_stext_page(ctx,text);
+        fz_close_output(inst->ctx, out);
+        fz_drop_stext_page(inst->ctx, text);
     }
-    fz_catch(ctx)
+    fz_catch(inst->ctx)
     {
-        fprintf(stderr, "cannot extract text from page %d. err: %s\n", page_number, fz_caught_message(ctx));
+        fprintf(stderr, "cannot extract text from page %d. err: %s\n", page_number, fz_caught_message(inst->ctx));
         return EXIT_FAILURE;
     }
-    *len = fz_buffer_storage(ctx, buf, result);
+    *len = fz_buffer_storage(inst->ctx, inst->buf, result);
     return EXIT_SUCCESS;
 }
 
-int GetPagePixmap(int page_number, unsigned char** result, int* w, int* h, int* stride, int* channel)
+int GetPagePixmap(MuPdfInst* inst, int page_number, unsigned char** result, int* w, int* h, int* channel)
 {
-    if(p != nullptr)
+    if(inst->p != nullptr)
     {
-        fz_drop_pixmap(ctx, p);
+        fz_drop_pixmap(inst->ctx, inst->p);
     }
-    fz_try(ctx)
+    fz_try(inst->ctx)
     {
-        p = fz_new_pixmap_from_page_number(ctx, doc, page_number, fz_identity, fz_device_rgb(ctx), 0);
+        inst->p = fz_new_pixmap_from_page_number(inst->ctx, inst->doc, page_number, fz_identity, fz_device_rgb(inst->ctx), 0);
     }
-    fz_catch(ctx)
+    fz_catch(inst->ctx)
     {
-        fprintf(stderr, "cannot render page %d. err: %s\n", page_number, fz_caught_message(ctx));
+        fprintf(stderr, "cannot render page %d. err: %s\n", page_number, fz_caught_message(inst->ctx));
         return EXIT_FAILURE;
     }
-    *result = fz_pixmap_samples(ctx, p);
-    *w = p->w;
-    *h = p->h;
-    *stride = p->stride;
-    *channel = p->n;
+    *result = fz_pixmap_samples(inst->ctx, inst->p);
+    *w = inst->p->w;
+    *h = inst->p->h;
+    *channel = inst->p->n;
 }
 
-void ClearMuPDF()
+void ClearMuPDF(MuPdfInst* inst)
 {
-    if(doc != nullptr)
+    if(inst->doc != nullptr)
     {
-        if(p != nullptr)
+        if(inst->p != nullptr)
         {
-            fz_drop_pixmap(ctx, p);
+            fz_drop_pixmap(inst->ctx, inst->p);
         }
-        fz_drop_buffer(ctx, buf);
-        fz_drop_document(ctx, doc);
-        fz_drop_context(ctx);
+        fz_drop_buffer(inst->ctx, inst->buf);
+        fz_drop_document(inst->ctx, inst->doc);
+        fz_drop_context(inst->ctx);
     }
+    delete inst;
 }
 unsigned char t[] = "lueluelue";
 void hello_world(unsigned char** i)

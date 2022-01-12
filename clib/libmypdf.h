@@ -1,6 +1,9 @@
-int LoadDocument(const char* path);
-int GetPageCount(int* page_count);
-int GetPageText(int page_number, unsigned char** result, int* len);
-int GetPagePixmap(int page_number, unsigned char** result, int* w, int* h, int* stride, int* channel);
-void ClearMuPDF();
+typedef struct MuPdfInst MuPdfInst;
+
+MuPdfInst* NewMuPdfInst();
+int LoadDocument(MuPdfInst* inst, const char* path);
+int GetPageCount(MuPdfInst* inst, int* page_count);
+int GetPageText(MuPdfInst* inst, int page_number, unsigned char** result, int* len);
+int GetPagePixmap(MuPdfInst* inst, int page_number, unsigned char** result, int* w, int* h, int* channel);
+void ClearMuPDF(MuPdfInst* inst);
 void hello_word(unsigned char** i);
