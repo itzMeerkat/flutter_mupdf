@@ -6,11 +6,17 @@ struct MuPdfInst {
     fz_context* ctx;
     fz_buffer* buf;
     fz_pixmap* p;
+    float scale = 1;
 };
 
 MuPdfInst* newMuPdfInst()
 {
     return new MuPdfInst{};
+}
+
+void setScale(MuPdfInst* inst, float t_scale)
+{
+    inst->scale = t_scale;
 }
 
 int loadDocument(MuPdfInst* inst, const char* path)
@@ -62,7 +68,7 @@ int getPageText(MuPdfInst* inst, int page_number, unsigned char** result, int* l
     {
         text = fz_new_stext_page_from_page_number(inst->ctx, inst->doc, page_number, &options);
         out = fz_new_output_with_buffer(inst->ctx, inst->buf);
-        fz_print_stext_page_as_json(inst->ctx, out, text, 1);
+        fz_print_stext_page_as_json(inst->ctx, out, text, inst->scale);
     }
     fz_always(inst->ctx)
     {
@@ -86,7 +92,7 @@ int getPagePixmap(MuPdfInst* inst, int page_number, unsigned char** result, int*
     }
     fz_try(inst->ctx)
     {
-        inst->p = fz_new_pixmap_from_page_number(inst->ctx, inst->doc, page_number, fz_identity, fz_device_rgb(inst->ctx), 0);
+        inst->p = fz_new_pixmap_from_page_number(inst->ctx, inst->doc, page_number, fz_scale(inst->scale, inst->scale), fz_device_rgb(inst->ctx), 0);
     }
     fz_catch(inst->ctx)
     {

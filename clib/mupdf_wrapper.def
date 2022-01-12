@@ -6,3 +6,4 @@ EXPORTS
     getPagePixmap
     clearMuPDF
     newMuPdfInst
+    setScale

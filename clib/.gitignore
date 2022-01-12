@@ -7,3 +7,7 @@ x64
 *.filters
 CMakeCache.txt
 *.sln
+
+Testing
+*.cmake
+*.ppm

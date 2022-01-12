@@ -9,3 +9,8 @@ endif()
 
 include_directories("C:/Users/admin/workspace/mupdf-1.19.0-source/mupdf-1.19.0-source/include")
 target_link_libraries(libmupdf_wrapper PUBLIC "C:/Users/admin/workspace/mupdf-1.19.0-source/mupdf-1.19.0-source/platform/win32/x64/Debug/libmupdf.lib")
+
+add_executable(tester "./mupdf_wrapper_test.cc")
+target_link_libraries(tester PUBLIC "D:/workspace/flutter_mupdf/clib/Debug/libmupdf_wrapper.lib")
+enable_testing()
+add_test(NAME run_tester COMMAND tester)
