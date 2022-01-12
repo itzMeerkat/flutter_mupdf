@@ -113,8 +113,3 @@ void ClearMuPDF(MuPdfInst* inst)
     }
     delete inst;
 }
-unsigned char t[] = "lueluelue";
-void hello_world(unsigned char** i)
-{
-    (*i) = t;
-}

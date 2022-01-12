@@ -1,5 +1,7 @@
 import 'dart:ffi';
 import 'dart:convert';
+import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter_mupdf/clibmypdf.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,7 +12,7 @@ void main() {
   late Pointer<MuPdfInst> ctx;
   setUpAll(() {
     ctx = p.newPdfInst();
-    p.loadDocument(ctx, "./chapter3.pdf");
+    p.loadDocument(ctx, "./mxnet-learningsys.pdf");
   });
 
   test("getPageCount", () {
@@ -28,6 +30,14 @@ void main() {
     var res = await p.getPagePixmap(ctx, 0);
     print(res.height);
     print(res.width);
+
+    var png = res.toByteData(format: ImageByteFormat.png);
+    png.then((value) {
+      var f = File("./myrastpage.png");
+      f.create();
+      f.writeAsBytesSync(
+          value!.buffer.asInt8List(value.offsetInBytes, value.lengthInBytes));
+    });
   });
   tearDownAll(() {
     p.clearMuPDF(ctx);

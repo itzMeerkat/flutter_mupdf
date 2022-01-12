@@ -19,19 +19,13 @@ class FlutterPdfPlugin {
   FlutterPdfPlugin() {
     final dylib = DynamicLibrary.open(libraryPath);
     pdflib = libMuPdf(dylib);
-
-    // var newf = dylib.lookupFunction<Pointer<MuPdfInst> Function(),
-    //     Pointer<MuPdfInst> Function()>("NewMuPdfInst");
-    // print(newf);
   }
 
   Pointer<MuPdfInst> newPdfInst() {
-    print("new inst");
     return pdflib.NewMuPdfInst();
   }
 
   void loadDocument(Pointer<MuPdfInst> ctx, String p) {
-    print("load doc " + p);
     var _p = p.toNativeUtf8().cast<Int8>();
     int suc = pdflib.LoadDocument(ctx, _p);
     calloc.free(_p);
@@ -41,7 +35,6 @@ class FlutterPdfPlugin {
   }
 
   int getPageCount(Pointer<MuPdfInst> ctx) {
-    print("get page cnt");
     Pointer<Int32> p = calloc<Int32>();
     var suc = pdflib.GetPageCount(ctx, p);
     int ret = p.value;
@@ -50,7 +43,6 @@ class FlutterPdfPlugin {
   }
 
   PdfText getPageText(Pointer<MuPdfInst> ctx, int pageNumber) {
-    print("get text");
     Pointer<Pointer<Utf8>> j = calloc<Pointer<Utf8>>();
     Pointer<Int32> l = calloc<Int32>();
     pdflib.GetPageText(ctx, pageNumber, j, l);
@@ -72,12 +64,13 @@ class FlutterPdfPlugin {
     int channel = _channel.value;
 
     Uint8List rawPixel = raw.value.asTypedList(w * h * channel);
-    List<int> rgba = [];
-    for (int i = 0; i < rawPixel.length; i++) {
-      rgba.add(rawPixel[i]);
-      if ((i + 1) % 3 == 0) {
-        rgba.add(0);
-      }
+    var rgba = List<int>.filled(w * h * 4, 255);
+    for (int i = 0; i < w * h; i++) {
+      int ro = i * 3;
+      int no = i * 4;
+      rgba[no] = rawPixel[ro];
+      rgba[no + 1] = rawPixel[ro + 1];
+      rgba[no + 2] = rawPixel[ro + 2];
     }
 
     Uint8List rgbaList = Uint8List.fromList(rgba);
@@ -86,12 +79,10 @@ class FlutterPdfPlugin {
     decodeImageFromPixels(rgbaList, w, h, PixelFormat.rgba8888, (Image img) {
       c.complete(img);
     });
-    // return ret;
     return c.future;
   }
 
   void clearMuPDF(Pointer<MuPdfInst> ctx) {
-    print("clear");
     pdflib.ClearMuPDF(ctx);
   }
 }
