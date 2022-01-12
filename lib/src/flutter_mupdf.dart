@@ -4,30 +4,30 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
-import 'package:flutter_mupdf/clibmypdf.dart';
-import 'package:flutter_mupdf/pdf_text.dart';
+import 'package:flutter_mupdf/src/mupdf_wrapper.dart';
+import 'package:flutter_mupdf/src/pdf_text.dart';
 import 'dart:io' show Directory;
 import 'package:path/path.dart' as path;
 import 'dart:convert';
 import 'dart:ui';
 
-class FlutterPdfPlugin {
-  String libraryPath =
-      path.join(Directory.current.path, 'clib', 'Debug', 'flutter_mupdf.dll');
-  late libMuPdf pdflib;
+class FlutterMuPdf {
+  String libraryPath = path.join(
+      Directory.current.path, 'clib', 'Debug', 'libmupdf_wrapper.dll');
+  late MuPdfWrapper pdflib;
 
-  FlutterPdfPlugin() {
+  FlutterMuPdf() {
     final dylib = DynamicLibrary.open(libraryPath);
-    pdflib = libMuPdf(dylib);
+    pdflib = MuPdfWrapper(dylib);
   }
 
   Pointer<MuPdfInst> newPdfInst() {
-    return pdflib.NewMuPdfInst();
+    return pdflib.newMuPdfInst();
   }
 
   void loadDocument(Pointer<MuPdfInst> ctx, String p) {
     var _p = p.toNativeUtf8().cast<Int8>();
-    int suc = pdflib.LoadDocument(ctx, _p);
+    int suc = pdflib.loadDocument(ctx, _p);
     calloc.free(_p);
     if (suc > 0) {
       throw suc;
@@ -36,7 +36,7 @@ class FlutterPdfPlugin {
 
   int getPageCount(Pointer<MuPdfInst> ctx) {
     Pointer<Int32> p = calloc<Int32>();
-    var suc = pdflib.GetPageCount(ctx, p);
+    pdflib.getPageCount(ctx, p);
     int ret = p.value;
     calloc.free(p);
     return ret;
@@ -45,7 +45,7 @@ class FlutterPdfPlugin {
   PdfText getPageText(Pointer<MuPdfInst> ctx, int pageNumber) {
     Pointer<Pointer<Utf8>> j = calloc<Pointer<Utf8>>();
     Pointer<Int32> l = calloc<Int32>();
-    pdflib.GetPageText(ctx, pageNumber, j, l);
+    pdflib.getPageText(ctx, pageNumber, j, l);
     String ret = j.value.toDartString(length: l.value);
     calloc.free(j);
     calloc.free(l);
@@ -58,7 +58,7 @@ class FlutterPdfPlugin {
     Pointer<Int32> _w = calloc<Int32>();
     Pointer<Int32> _h = calloc<Int32>();
     Pointer<Int32> _channel = calloc<Int32>();
-    pdflib.GetPagePixmap(ctx, pageNumber, raw, _w, _h, _channel);
+    pdflib.getPagePixmap(ctx, pageNumber, raw, _w, _h, _channel);
     int w = _w.value;
     int h = _h.value;
     int channel = _channel.value;
@@ -83,6 +83,6 @@ class FlutterPdfPlugin {
   }
 
   void clearMuPDF(Pointer<MuPdfInst> ctx) {
-    pdflib.ClearMuPDF(ctx);
+    pdflib.clearMuPDF(ctx);
   }
 }

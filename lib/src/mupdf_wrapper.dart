@@ -6,71 +6,72 @@ import 'dart:ffi' as ffi;
 import 'package:ffi/ffi.dart';
 
 /// A Flutter wrapper for MuPDF
-class libMuPdf {
+class MuPdfWrapper {
   /// Holds the symbol lookup function.
   final ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName)
       _lookup;
 
   /// The symbols are looked up in [dynamicLibrary].
-  libMuPdf(ffi.DynamicLibrary dynamicLibrary) : _lookup = dynamicLibrary.lookup;
+  MuPdfWrapper(ffi.DynamicLibrary dynamicLibrary)
+      : _lookup = dynamicLibrary.lookup;
 
   /// The symbols are looked up with [lookup].
-  libMuPdf.fromLookup(
+  MuPdfWrapper.fromLookup(
       ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName)
           lookup)
       : _lookup = lookup;
 
-  ffi.Pointer<MuPdfInst> NewMuPdfInst() {
-    return _NewMuPdfInst();
+  ffi.Pointer<MuPdfInst> newMuPdfInst() {
+    return _newMuPdfInst();
   }
 
-  late final _NewMuPdfInstPtr =
+  late final _newMuPdfInstPtr =
       _lookup<ffi.NativeFunction<ffi.Pointer<MuPdfInst> Function()>>(
-          'NewMuPdfInst');
-  late final _NewMuPdfInst =
-      _NewMuPdfInstPtr.asFunction<ffi.Pointer<MuPdfInst> Function()>();
+          'newMuPdfInst');
+  late final _newMuPdfInst =
+      _newMuPdfInstPtr.asFunction<ffi.Pointer<MuPdfInst> Function()>();
 
-  int LoadDocument(
+  int loadDocument(
     ffi.Pointer<MuPdfInst> inst,
     ffi.Pointer<ffi.Int8> path,
   ) {
-    return _LoadDocument(
+    return _loadDocument(
       inst,
       path,
     );
   }
 
-  late final _LoadDocumentPtr = _lookup<
+  late final _loadDocumentPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int32 Function(
-              ffi.Pointer<MuPdfInst>, ffi.Pointer<ffi.Int8>)>>('LoadDocument');
-  late final _LoadDocument = _LoadDocumentPtr.asFunction<
+              ffi.Pointer<MuPdfInst>, ffi.Pointer<ffi.Int8>)>>('loadDocument');
+  late final _loadDocument = _loadDocumentPtr.asFunction<
       int Function(ffi.Pointer<MuPdfInst>, ffi.Pointer<ffi.Int8>)>();
 
-  int GetPageCount(
+  int getPageCount(
     ffi.Pointer<MuPdfInst> inst,
     ffi.Pointer<ffi.Int32> page_count,
   ) {
-    return _GetPageCount(
+    return _getPageCount(
       inst,
       page_count,
     );
   }
 
-  late final _GetPageCountPtr = _lookup<
+  late final _getPageCountPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int32 Function(
-              ffi.Pointer<MuPdfInst>, ffi.Pointer<ffi.Int32>)>>('GetPageCount');
-  late final _GetPageCount = _GetPageCountPtr.asFunction<
+              ffi.Pointer<MuPdfInst>, ffi.Pointer<ffi.Int32>)>>('getPageCount');
+  late final _getPageCount = _getPageCountPtr.asFunction<
       int Function(ffi.Pointer<MuPdfInst>, ffi.Pointer<ffi.Int32>)>();
 
-  int GetPageText(
+  int getPageText(
     ffi.Pointer<MuPdfInst> inst,
     int page_number,
     ffi.Pointer<ffi.Pointer<Utf8>> result,
     ffi.Pointer<ffi.Int32> len,
   ) {
-    return _GetPageText(
+    return _getPageText(
       inst,
       page_number,
       result,
@@ -78,18 +79,18 @@ class libMuPdf {
     );
   }
 
-  late final _GetPageTextPtr = _lookup<
+  late final _getPageTextPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int32 Function(
               ffi.Pointer<MuPdfInst>,
               ffi.Int32,
               ffi.Pointer<ffi.Pointer<Utf8>>,
-              ffi.Pointer<ffi.Int32>)>>('GetPageText');
-  late final _GetPageText = _GetPageTextPtr.asFunction<
+              ffi.Pointer<ffi.Int32>)>>('getPageText');
+  late final _getPageText = _getPageTextPtr.asFunction<
       int Function(ffi.Pointer<MuPdfInst>, int, ffi.Pointer<ffi.Pointer<Utf8>>,
           ffi.Pointer<ffi.Int32>)>();
 
-  int GetPagePixmap(
+  int getPagePixmap(
     ffi.Pointer<MuPdfInst> inst,
     int page_number,
     ffi.Pointer<ffi.Pointer<ffi.Uint8>> result,
@@ -97,7 +98,7 @@ class libMuPdf {
     ffi.Pointer<ffi.Int32> h,
     ffi.Pointer<ffi.Int32> channel,
   ) {
-    return _GetPagePixmap(
+    return _getPagePixmap(
       inst,
       page_number,
       result,
@@ -107,7 +108,7 @@ class libMuPdf {
     );
   }
 
-  late final _GetPagePixmapPtr = _lookup<
+  late final _getPagePixmapPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int32 Function(
               ffi.Pointer<MuPdfInst>,
@@ -115,8 +116,8 @@ class libMuPdf {
               ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
               ffi.Pointer<ffi.Int32>,
               ffi.Pointer<ffi.Int32>,
-              ffi.Pointer<ffi.Int32>)>>('GetPagePixmap');
-  late final _GetPagePixmap = _GetPagePixmapPtr.asFunction<
+              ffi.Pointer<ffi.Int32>)>>('getPagePixmap');
+  late final _getPagePixmap = _getPagePixmapPtr.asFunction<
       int Function(
           ffi.Pointer<MuPdfInst>,
           int,
@@ -125,19 +126,19 @@ class libMuPdf {
           ffi.Pointer<ffi.Int32>,
           ffi.Pointer<ffi.Int32>)>();
 
-  void ClearMuPDF(
+  void clearMuPDF(
     ffi.Pointer<MuPdfInst> inst,
   ) {
-    return _ClearMuPDF(
+    return _clearMuPDF(
       inst,
     );
   }
 
-  late final _ClearMuPDFPtr =
+  late final _clearMuPDFPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<MuPdfInst>)>>(
-          'ClearMuPDF');
-  late final _ClearMuPDF =
-      _ClearMuPDFPtr.asFunction<void Function(ffi.Pointer<MuPdfInst>)>();
+          'clearMuPDF');
+  late final _clearMuPDF =
+      _clearMuPDFPtr.asFunction<void Function(ffi.Pointer<MuPdfInst>)>();
 }
 
 class MuPdfInst extends ffi.Opaque {}

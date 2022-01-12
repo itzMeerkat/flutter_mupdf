@@ -1,4 +1,4 @@
-#include "libmypdf.h"
+#include "mupdf_wrapper.h"
 #include <mupdf/fitz.h>
 
 struct MuPdfInst {
@@ -8,12 +8,12 @@ struct MuPdfInst {
     fz_pixmap* p;
 };
 
-MuPdfInst* NewMuPdfInst()
+MuPdfInst* newMuPdfInst()
 {
     return new MuPdfInst{};
 }
 
-int LoadDocument(MuPdfInst* inst, const char* path)
+int loadDocument(MuPdfInst* inst, const char* path)
 {
     inst->ctx = fz_new_context(NULL, NULL, FZ_STORE_UNLIMITED);
     if (!inst->ctx)
@@ -36,7 +36,7 @@ int LoadDocument(MuPdfInst* inst, const char* path)
     return EXIT_SUCCESS;
 }
 
-int GetPageCount(MuPdfInst* inst, int* page_count)
+int getPageCount(MuPdfInst* inst, int* page_count)
 {
     fz_try(inst->ctx)
     {
@@ -50,7 +50,7 @@ int GetPageCount(MuPdfInst* inst, int* page_count)
     return EXIT_SUCCESS;
 }
 
-int GetPageText(MuPdfInst* inst, int page_number, unsigned char** result, int* len)
+int getPageText(MuPdfInst* inst, int page_number, unsigned char** result, int* len)
 {
     fz_stext_options options;
     options.flags = FZ_STEXT_PRESERVE_WHITESPACE;
@@ -78,7 +78,7 @@ int GetPageText(MuPdfInst* inst, int page_number, unsigned char** result, int* l
     return EXIT_SUCCESS;
 }
 
-int GetPagePixmap(MuPdfInst* inst, int page_number, unsigned char** result, int* w, int* h, int* channel)
+int getPagePixmap(MuPdfInst* inst, int page_number, unsigned char** result, int* w, int* h, int* channel)
 {
     if(inst->p != nullptr)
     {
@@ -97,9 +97,10 @@ int GetPagePixmap(MuPdfInst* inst, int page_number, unsigned char** result, int*
     *w = inst->p->w;
     *h = inst->p->h;
     *channel = inst->p->n;
+    return EXIT_SUCCESS;
 }
 
-void ClearMuPDF(MuPdfInst* inst)
+void clearMuPDF(MuPdfInst* inst)
 {
     if(inst->doc != nullptr)
     {

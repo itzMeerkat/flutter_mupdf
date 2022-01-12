@@ -1,0 +1,8 @@
+LIBRARY   libmupdf_wrapper
+EXPORTS
+    loadDocument
+    getPageCount
+    getPageText
+    getPagePixmap
+    clearMuPDF
+    newMuPdfInst

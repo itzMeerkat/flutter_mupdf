@@ -22,11 +22,11 @@ dev_dependencies:
   build_runner: ^2.1.7
 
 ffigen:
-  output: 'lib/clibmypdf.dart'
+  output: 'lib/src/mupdf_wrapper.dart'
   headers:
     entry-points:
-      - 'clib/libmypdf.h'
-  name: 'libMuPdf'
+      - 'clib/mupdf_wrapper.h'
+  name: 'MuPdfWrapper'
   description: 'A Flutter wrapper for MuPDF'
   
 
